@@ -5,7 +5,7 @@ dataset='KODAK'
 downscaling_factor=1
 encoding='nerf'
 encoding_scale=1.4
-epochs=2
+epochs=25000
 epochs_til_ckpt=5000
 exp_root='exp/maml_kodak'
 ff_dims=16
@@ -22,9 +22,9 @@ lr_type=per_parameter_per_step
 maml_adaptation_steps=3
 maml_batch_size=1
 maml_dataset='DIV2K'
-maml_epochs=1
+maml_epochs=30
 
-for hidden_dims in 32
+for hidden_dims in 32 48 64 128
 do
     python image_compression/trainMetaSiren.py \
     --activation $activation \
@@ -48,7 +48,7 @@ do
 done
 #Overfitting
 warmup=100
-for hidden_dims in 32
+for hidden_dims in 32 48 64 96 128
 do
     python image_compression/overfitMetaSiren.py \
     --activation $activation \
@@ -86,7 +86,7 @@ code='arithmetic'
 retrain_epochs=300
 retrain_lr=1.0e-06
 
-for bitwidth in 7
+for bitwidth in 7 8
 do
     python image_compression/quantize_and_test.py \
     --exp_glob "$exp_glob" \
