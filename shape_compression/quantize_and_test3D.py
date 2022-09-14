@@ -153,15 +153,10 @@ def main(_):
                 ref_model.load_state_dict(ref_state_dict, strict=True)
             except:
                 ref_model = None
-            if TRAINING_FLAGS['model_type'] == 'mlp':
-                if ref_model:
-                    offset_model = convert_to_nn_module_with_offset(model, ref_model)
-                model = convert_to_nn_module(model)
-            else:
-                model = convert_to_nn_module_in_place(model)
-                model.use_meta = False
 
+            model = convert_to_nn_module(model)
             if ref_model:
+                offset_model = convert_to_nn_module_with_offset(model, ref_model)
                 quant = SDFQuantizer(offset_model, mesh_dataset, dataloader, FLAGS.bitwidth, device, exp_folder)
             else:
                 quant = SDFQuantizer(model, mesh_dataset, dataloader, FLAGS.bitwidth, device, exp_folder)
@@ -174,6 +169,7 @@ def main(_):
                 adaround_reg=FLAGS.adaround_reg,
                 difference_encoding='parallel',
                 code=FLAGS.code)
+
             model.load_state_dict(state_dict, strict=True)
             mse = check_mse_sdf(mesh_dataset, model)
             metrics = check_metrics_sdf(mesh_dataset.dataset_path, model)
